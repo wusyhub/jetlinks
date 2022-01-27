@@ -6,7 +6,7 @@
 
     <groupId>org.jetlinks</groupId>
     <artifactId>jetlinks</artifactId>
-    <version>1.1.10-SNAPSHOT</version>
+    <version>${reversion}</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -20,115 +20,17 @@
     <inceptionYear>2019</inceptionYear>
     <description>JetLinks 物联网平台</description>
 
-    <licenses>
-        <license>
-            <name>The Apache License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>zhouhao</name>
-            <email>i@hsweb.me</email>
-            <roles>
-                <role>Owner</role>
-            </roles>
-            <timezone>+8</timezone>
-            <url>https://github.com/zhou-hao</url>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:https://github.com/jetlinks/jetlinks.git</connection>
-        <developerConnection>scm:git:https://github.com/jetlinks/jetlinks.git</developerConnection>
-        <url>https://github.com/jetlinks/jetlinks</url>
-        <tag>${project.version}</tag>
-    </scm>
 
     <properties>
+        <reversion>1.1.10.1-SNAPSHOT</reversion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locales>zh_CN</project.build.locales>
         <java.version>1.8</java.version>
         <project.build.jdk>${java.version}</project.build.jdk>
-        <hsweb.framework.version>4.0.13</hsweb.framework.version>
+        <hsweb.framework.version>4.0.14.1-SNAPSHOT</hsweb.framework.version>
         <hsweb.expands.version>3.0.2</hsweb.expands.version>
         <reactor.version>Dysprosium-SR20</reactor.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.3</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>sonatype-releases</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                            <stagingProgressTimeoutMinutes>120</stagingProgressTimeoutMinutes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <configuration>
-                            <autoVersionSubmodules>true</autoVersionSubmodules>
-                            <useReleaseProfile>false</useReleaseProfile>
-                            <releaseProfiles>release</releaseProfiles>
-                            <goals>deploy</goals>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <distributionManagement>
-                <repository>
-                    <id>sonatype-releases</id>
-                    <name>sonatype repository</name>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-                </repository>
-                <snapshotRepository>
-                    <id>sonatype-snapshots</id>
-                    <name>Nexus Snapshot Repository</name>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-    </profiles>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -239,12 +141,35 @@
                     </includes>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.2.5</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
@@ -326,46 +251,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-
         </dependencies>
     </dependencyManagement>
-
-    <repositories>
-        <repository>
-            <id>hsweb-nexus</id>
-            <name>Nexus Release Repository</name>
-            <url>https://nexus.hsweb.me/content/groups/public/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>aliyun-nexus</id>
-            <name>aliyun</name>
-            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>Nexus Release Repository</name>
-            <url>https://nexus.hsweb.me/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Nexus Snapshot Repository</name>
-            <url>https://nexus.hsweb.me/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>aliyun-nexus</id>
-            <name>aliyun</name>
-            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
